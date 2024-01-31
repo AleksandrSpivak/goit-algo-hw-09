@@ -9,15 +9,8 @@ def find_coins_gready(coins, value):
         if coin > 0:
             change_dict[coin] = value // int(coin)
             value = value % coin
-    str = ", ".join(
-        [
-            f"монета {key}: {value} шт."
-            for key, value in change_dict.items()
-            if value > 0
-        ]
-    )
 
-    return str
+    return change_dict
 
 
 def find_min_coins(coins, sum_for_exchange):
@@ -57,14 +50,12 @@ def find_min_coins(coins, sum_for_exchange):
         if scenarios_matrix[i][sum_for_exchange] < min_coins:
             min_coins = scenarios_matrix[i][sum_for_exchange]
             solution = scenarios_dict[(i, sum_for_exchange)]
-    str = ", ".join(
-        [
-            f"монета {ccoins[key]}: {value} шт."
-            for key, value in solution.items()
-            if value > 0
-        ]
-    )
-    return str
+
+    change_dict = {}
+    for key, value in solution.items():
+        if value > 0:
+            change_dict[ccoins[key]] = value
+    return change_dict
 
 
 def benchmark(func: Callable, coins_, sum_for_exchange_):
@@ -82,14 +73,34 @@ if __name__ == "__main__":
     coins = [50, 25, 10, 5, 2, 1]
     try:
         sum_for_exchange = int(input("Введіть необхідну для розміну суму: \n"))
-        print("Результат жадібного алгоритму: ")
-        print(find_coins_gready(coins, sum_for_exchange))
-        print("Результат динамічного алгоритму: ")
-        print(find_min_coins(coins, sum_for_exchange))
+
         if sum_for_exchange <= 0:
             raise ValueError
     except ValueError:
         print("не коректна сума")
+
+    print("Результат жадібного алгоритму: ")
+    greedy_res = find_coins_gready(coins, sum_for_exchange)
+    print(
+        ", ".join(
+            [
+                f"монета {key}: {value} шт"
+                for key, value in greedy_res.items()
+                if value > 0
+            ]
+        )
+    )
+    print("Результат динамічного алгоритму: ")
+    dynamic_res = find_min_coins(coins, sum_for_exchange)
+    print(
+        ", ".join(
+            [
+                f"монета {key}: {value} шт"
+                for key, value in dynamic_res.items()
+                if value > 0
+            ]
+        )
+    )
 
     results = []
     for sum_for_exchange in [11, 111, 1111, 11111]:
